@@ -1,0 +1,102 @@
+package amazonalltest;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.Select;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class AmazonProjectTestNGAnnotation {
+	WebDriver driver;
+@BeforeSuite
+public void luanchbrowser() {
+	WebDriverManager.chromedriver().setup();
+	driver=new ChromeDriver();
+	driver.manage().window().maximize();
+}
+@BeforeTest
+public void loginprocess() throws InterruptedException {
+	driver.get("https://www.amazon.in");
+	Thread.sleep(2000);
+	driver.findElement(By.id("nav-link-accountList-nav-line-1")).click();
+	driver.findElement(By.name("email")).sendKeys("vaibhav.dalvi1996@gmail.com");
+	driver.findElement(By.id("continue")).click();
+	driver.findElement(By.id("ap_password")).sendKeys("Qwertyuiop@123"); 
+	Thread.sleep(2000);
+	driver.findElement(By.xpath("//input[@type='submit']")).click();
+}
+	@Test (priority=1)
+	public void searchprocess()
+	{
+		driver.findElement(By.id("twotabsearchtextbox")).sendKeys("iphone 14 pro");
+		driver.findElement(By.id("nav-search-submit-text")).click();
+		System.out.println("iphone 14 pro searched successfully");
+}
+	@Test(priority=2)
+	public void addproduct () throws InterruptedException {
+		Actions act=new Actions(driver);
+		act.moveToElement(driver.findElement(By.linkText("Apple iPhone 14 Pro (128 GB) - Silver"))).click().perform();
+		Thread.sleep(2000);
+		
+	Set<String>handle=driver.getWindowHandles();
+		Iterator<String>itr=handle.iterator();
+		String ParentWindow=itr.next();
+		String ChildWindow=itr.next();
+		driver.switchTo().window(ChildWindow)	;
+		driver.findElement(By.id("add-to-cart-button")).click();
+		Thread.sleep(1000);
+		System.out.println("product successfully added to the cart");
+		 Thread.sleep(2000);
+		}
+	
+	@Test (priority=3)
+	public void updateproductquantity() throws InterruptedException {
+		
+       
+        driver.findElement(By.xpath("//form/span[@id='attach-sidesheet-view-cart-button']")).click();
+        Thread.sleep(1000);
+        
+      WebElement drop=driver.findElement(By.xpath("//select[@name='quantity']"));
+       Select from=new Select(drop);
+       Thread.sleep(2000);
+		from.selectByIndex(5);
+		Thread.sleep(3000);
+		
+    System.out.println("product quantity is updated successfully");
+
+	}
+	@Test (priority=4)
+	public void deleteproduct() throws InterruptedException {
+		driver.findElement(By.xpath("/html[1]/body[1]/div[1]/div[2]/div[3]/div[5]/div[1]/div[2]/div[1]/div[1]/form[1]/div[2]/div[3]/div[4]/div[1]/div[3]/div[1]/span[2]/span[1]/input[1]")).click();
+		Thread.sleep(2000);
+		System.out.println("product successfully deleted from the cart");
+
+	}
+	@Test (priority=5)
+	public void logoutprocess() throws InterruptedException {
+		
+		Actions ac=new Actions(driver);
+	ac.moveToElement(driver.findElement(By.xpath("//div[@class='nav-line-1-container']"))).perform();
+	driver.findElement(By.id("nav-item-signout")).click();
+	Thread.sleep(1000);
+		System.out.println("logout successfully done");
+		Thread.sleep(2000);
+	}
+	@AfterTest
+	public void browsercloseprocess() {
+		driver.quit();
+		System.out.println("browser closed successfully");
+	}
+
+	
+	
+}
